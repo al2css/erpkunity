@@ -46,8 +46,6 @@ public class TabsGroupScript : MonoBehaviour {
             //Debug.LogError(i);
             Views.Add(tabs[i], views[i]);
         }
-
-        Debug.LogWarning("MergeLists Function");
     }
 
     public void SetActiveView(bool non)
