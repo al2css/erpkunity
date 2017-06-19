@@ -17,14 +17,15 @@ public class WWWHelper : MonoBehaviour {
     public void Get(string url)
     {
         WWW www = new WWW(url);
+        //string cookie = www.responseHeaders["Set-Cookie"];
 
         StartCoroutine(WaitForRequest(www));
     }
 
     public void Post(string url, Dictionary<string, string> formData)
     {
-        Debug.LogWarning("---- POST url: " + url);
-        Debug.LogWarning("---- POST formData: " + Json.Serialize(formData));
+        //Debug.LogWarning("---- POST url: " + url);
+        //Debug.LogWarning("---- POST formData: " + Json.Serialize(formData));
 
         WWWForm form = new WWWForm();
 
@@ -33,7 +34,7 @@ public class WWWHelper : MonoBehaviour {
             form.AddField(item.Key, item.Value);
         }
 
-        Debug.LogWarning("---- POST FORM PARAMS: " + form.data);
+        //Debug.LogWarning("---- POST FORM PARAMS: " + form.data);
 
         WWW www = new WWW(url, form);
 
@@ -43,6 +44,15 @@ public class WWWHelper : MonoBehaviour {
     IEnumerator WaitForRequest(WWW www)
     {
         yield return www;
+
+        Debug.LogWarning(Json.Serialize(www.responseHeaders));
+        if (www.responseHeaders.Count > 0)
+        {
+            foreach (KeyValuePair<string, string> entry in www.responseHeaders)
+            {
+                //Debug.LogWarning(entry.Value + "=" + entry.Key);
+            }
+        }
 
         if (www.error == null)
         {

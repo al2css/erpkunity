@@ -17,7 +17,7 @@ public class TabsGroupScript : MonoBehaviour {
     
     void Awake()
     {
-        Debug.LogWarning("TabsGroupScript Awake Function");
+        //Debug.LogWarning("TabsGroupScript Awake Function");
 
         tabsGroupInstance = GetComponent<ExtensionsToggleGroup>();
 
@@ -36,7 +36,7 @@ public class TabsGroupScript : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        Debug.LogWarning("TabsGroupScript Start Function");
+        //Debug.LogWarning("TabsGroupScript Start Function");
     }
 
     public void MergeLists()

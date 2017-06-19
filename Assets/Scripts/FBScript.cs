@@ -72,8 +72,8 @@ public class FBScript : MonoBehaviour {
             Debug.LogWarning(result.Error);
         } else
         {
-            var objs = Json.Serialize(result.ResultDictionary);
-            Debug.LogWarning("### AuthCallback JSON Object: " + objs);
+            //var objs = Json.Serialize(result.ResultDictionary);
+            //Debug.LogWarning("### AuthCallback JSON Object: " + objs);
             
             if (FB.IsLoggedIn)
             {
@@ -92,8 +92,8 @@ public class FBScript : MonoBehaviour {
 
     void LoginToErpk(IResult result)
     {
-        var objs = Json.Serialize(result.ResultDictionary);
-        Debug.LogWarning("@@@ LoginToErpk JSON Object: " + objs);
+        //var objs = Json.Serialize(result.ResultDictionary);
+        //Debug.LogWarning("@@@ LoginToErpk JSON Object: " + objs);
 
         var loginUrl = "https://www.erepublik.com/en/main/mobile-facebook-login";
         Dictionary<string, string> formData = new Dictionary<string, string>();
@@ -116,7 +116,7 @@ public class FBScript : MonoBehaviour {
             FB.API("/me?fields=first_name", HttpMethod.GET, DisplayUsername);
             FB.API("/me/picture?type=square&height=64&width=64", HttpMethod.GET, DisplayUserPic);
 
-            TabsGroupScript.tabsGroupScript.ActivateFirstView();
+            //TabsGroupScript.tabsGroupScript.ActivateFirstView();
         } else
         {
             DialogLoggedIn.SetActive(false);
@@ -126,8 +126,8 @@ public class FBScript : MonoBehaviour {
     
     void DisplayUsername(IResult result)
     {
-        var objs = Json.Serialize(result.ResultDictionary);
-        Debug.LogWarning("### DisplayUsername JSON Object: " + objs);
+        //var objs = Json.Serialize(result.ResultDictionary);
+        //Debug.LogWarning("### DisplayUsername JSON Object: " + objs);
 
         Text username = Username.GetComponent<Text>();
 

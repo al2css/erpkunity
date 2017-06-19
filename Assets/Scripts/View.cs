@@ -23,7 +23,7 @@ public class View : MonoBehaviour {
         if(gameObject.activeInHierarchy)
         {
             viewUrl = gameObject.name;
-            var url = "https://www.erepublik.com/en/military/military-unit/476/" + viewUrl;
+            var url = "https://www.erepublik.com/en/military/military-unit-data/?groupId=476&panel=" + viewUrl;
             Debug.LogWarning(url);
             requestManager.Get(url);
         }
