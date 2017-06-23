@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using Facebook.Unity;
 using Facebook.MiniJSON;
+using Assets.Scripts;
 
 public class FBScript : MonoBehaviour {
 
@@ -12,13 +13,16 @@ public class FBScript : MonoBehaviour {
     public GameObject DialogLoggedOut;
     public GameObject Username;
     public GameObject Userpic;
+    public static FBScript fbScript;
 
-    WWWHelper reqManager;
-    TabsGroupScript views;
+    WebRequest webRequestInstance;
 
     void Awake()
     {
-        reqManager = WWWHelper.wwwHelper;
+        if (fbScript == null)
+            fbScript = this;
+
+        webRequestInstance = WebRequest.webRequest;
         
         if (!FB.IsInitialized)
         {
@@ -39,7 +43,7 @@ public class FBScript : MonoBehaviour {
             Debug.Log("FB is not logged in");
         }
 
-        ShowIfLogged(FB.IsLoggedIn);
+        SetAppView(FB.IsLoggedIn);
     }
 
     void OnHideUnity(bool isGameShown)
@@ -85,16 +89,11 @@ public class FBScript : MonoBehaviour {
             {
                 Debug.Log("AuthCallback - FB is not logged in");
             }
-
-            ShowIfLogged(FB.IsLoggedIn);
         }
     }
 
     void LoginToErpk(IResult result)
     {
-        //var objs = Json.Serialize(result.ResultDictionary);
-        //Debug.LogWarning("@@@ LoginToErpk JSON Object: " + objs);
-
         var loginUrl = "https://www.erepublik.com/en/main/mobile-facebook-login";
         Dictionary<string, string> formData = new Dictionary<string, string>();
 
@@ -102,21 +101,46 @@ public class FBScript : MonoBehaviour {
         formData.Add("facebookId", result.ResultDictionary["user_id"].ToString());
         formData.Add("expiresAt", result.ResultDictionary["expiration_timestamp"].ToString());
         formData.Add("developer", "Alex");
-
-        reqManager.Post(loginUrl, formData);
+        
+        StartCoroutine(webRequestInstance.PostRequest(loginUrl, formData));
     }
 
-    void ShowIfLogged(bool isLoggedIn)
+    public IEnumerator LoginSuccess(JSONObject obj)
+    {
+        Debug.Log("LoginSuccess Function: " + obj);
+
+        LoginJsonHandler loginJson = new LoginJsonHandler(obj);
+
+        if (loginJson.message == "Success" && !loginJson.error)
+        {
+            var userAvatarUrl = loginJson.citizen.avatar.Replace(@"\", "");
+
+            SetAppView(!loginJson.error);
+
+            DisplayUsername(loginJson.citizen.name);
+            if (loginJson.citizen.has_avatar == "1") {
+                StartCoroutine(webRequestInstance.GetTexture(userAvatarUrl));
+            }
+
+        } else
+        {
+            SetAppView(!loginJson.error);
+        }
+
+        yield return null;
+    }
+
+    void SetAppView(bool isLoggedIn)
     {
         if(isLoggedIn)
         {
             DialogLoggedIn.SetActive(true);
             DialogLoggedOut.SetActive(false);
+            
+            //FB.API("/me?fields=first_name", HttpMethod.GET, DisplayFBUsername);
+            //FB.API("/me/picture?type=square&height=64&width=64", HttpMethod.GET, DisplayFBUserPic);
 
-            FB.API("/me?fields=first_name", HttpMethod.GET, DisplayUsername);
-            FB.API("/me/picture?type=square&height=64&width=64", HttpMethod.GET, DisplayUserPic);
-
-            //TabsGroupScript.tabsGroupScript.ActivateFirstView();
+            TabsGroupScript.tabsGroupScript.ActivateFirstView();
         } else
         {
             DialogLoggedIn.SetActive(false);
@@ -124,23 +148,37 @@ public class FBScript : MonoBehaviour {
         }
     }
     
-    void DisplayUsername(IResult result)
+    void DisplayUsername(string name)
+    {
+        Text username = Username.GetComponent<Text>();
+        username.text = "" + name;
+    }
+
+    public IEnumerator DisplayUserAvatar(Texture2D img)
+    {
+        Image userpic = Userpic.GetComponent<Image>();
+        userpic.sprite = Sprite.Create(img, new Rect(0, 0, img.width, img.height), new Vector2(0, 0));
+        yield return null;
+    }
+
+    void DisplayFBUsername(IResult result)
     {
         //var objs = Json.Serialize(result.ResultDictionary);
         //Debug.LogWarning("### DisplayUsername JSON Object: " + objs);
 
         Text username = Username.GetComponent<Text>();
 
-        if(result.Error == null)
+        if (result.Error == null)
         {
             username.text = "" + result.ResultDictionary["first_name"];
-        } else
+        }
+        else
         {
             Debug.LogWarning("DisplayUsername error: " + result.Error);
         }
     }
 
-    void DisplayUserPic(IGraphResult result)
+    void DisplayFBUserPic(IGraphResult result)
     {
         if (result.Texture != null)
         {

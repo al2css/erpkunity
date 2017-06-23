@@ -7,11 +7,14 @@ using Facebook.MiniJSON;
 public class WWWHelper : MonoBehaviour {
 
     public static WWWHelper wwwHelper;
+    GameManager manager;
 
     void Awake()
     {
         if (wwwHelper == null)
             wwwHelper = this;
+
+        manager = GameManager.gameManager;
     }
 
     public void Get(string url)
@@ -44,19 +47,20 @@ public class WWWHelper : MonoBehaviour {
     IEnumerator WaitForRequest(WWW www)
     {
         yield return www;
-
-        Debug.LogWarning(Json.Serialize(www.responseHeaders));
+        
         if (www.responseHeaders.Count > 0)
         {
             foreach (KeyValuePair<string, string> entry in www.responseHeaders)
             {
-                //Debug.LogWarning(entry.Value + "=" + entry.Key);
+                Debug.LogWarning("KEY: " + entry.Key + " ==== " + "VALUE: " + entry.Value);
             }
         }
 
         if (www.error == null)
         {
             Debug.Log("~~~~~ WWW OK: " + www.text);
+
+            //manager.SetCookies(www.text);
         }
         else
         {
