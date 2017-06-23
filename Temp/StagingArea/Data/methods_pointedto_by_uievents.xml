@@ -1,0 +1,10 @@
+<linker>
+	<assembly fullname="Assembly-CSharp">
+		<type fullname="FBScript">
+			<method name="FBLogin"/>
+		</type>
+		<type fullname="TabsGroupScript">
+			<method name="SetActiveView"/>
+		</type>
+	</assembly>
+</linker>
